@@ -25,6 +25,22 @@ def get_weather(city, country):
     
     tempk = float(weather_data['temperature']['@value'])
     tempc = tempk - 273.15
-    temperature_info = f"Температура в городе {location_name}: {tempc:.2f}°C"
 
-    return temperature_info
+    
+    humidity = int(weather_data['humidity']['@value'])
+    pressure = int(weather_data['pressure']['@value'])
+    wind_speed = float(weather_data['wind']['speed']['@value'])
+    wind_direction = weather_data['wind']['direction']['@name']
+    clouds = weather_data['clouds']['@name']
+    visibility = int(weather_data['visibility']['@value'])
+
+
+    weather_info = {
+        'temperature': f"Температура в городе {location_name}: {tempc:.2f}°C",
+        'humidity': f'Влажность: {humidity}%',
+        'pressure': f'Давление: {pressure} hPa',
+        'wind': f'Ветер: {wind_speed} м/с, {wind_direction}',
+        'clouds': f'Облачность: {clouds}',
+        'visibility': f'Видимость: {visibility} м',
+    }                                        
+    return weather_info

@@ -11,6 +11,6 @@ def weather_detail(request):
         city = serializer.validated_data['city']
         weather_data = get_weather(city, country)
 
-        return Response({'temperature_info': weather_data})
+        return Response({'weather_info': weather_data})
 
     return Response(serializer.errors, status=400)
