@@ -2,6 +2,10 @@ import os
 import requests
 import xmltodict
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 
 def get_weather(city, country):
@@ -19,9 +23,8 @@ def get_weather(city, country):
 
     location_name = f"{weather_data['city']['@name']}, {weather_data['city']['country']}"
     
-    tempc = float(weather_data['temperature']['@value'])
-    tempf = (tempc * (9/5)) + 32
-
-    temperature_info = f"Температура в городе {location_name}: {tempc:.2f}°C, {tempf:.2f}°F"
+    tempk = float(weather_data['temperature']['@value'])
+    tempc = tempk - 273.15
+    temperature_info = f"Температура в городе {location_name}: {tempc:.2f}°C"
 
     return temperature_info
