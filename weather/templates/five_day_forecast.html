@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Погода</title>
+</head>
+<body>
+    <h1>Погода в городе {{ weather_info.location_name }} на 5 дней</h1>
+    {% for day_weather in weather_info.weather_info_5_days %}
+        <h2>Дата: {{ day_weather.date }}</h2>
+        <p>{{ day_weather.temperature }}</p>
+        <p>{{ day_weather.humidity }}</p>
+        <p>{{ day_weather.pressure }}</p>
+        <p>{{ day_weather.wind }}</p>
+        <p>{{ day_weather.clouds }}</p>
+        <p>{{ day_weather.visibility }}</p>
+    {% endfor %}
+</body>
+</html>

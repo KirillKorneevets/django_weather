@@ -1,22 +1,12 @@
 import json
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db import IntegrityError
+from .models import User
 from .serializers import UserSerializer
-from django.contrib.auth import authenticate, login
-from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate, login
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-import secrets
-import string
-from .models import User, UserToken
-
-def generate_unique_token():
-    generation = string.ascii_letters + string.digits
-    token = ''.join(secrets.choice(generation) for _ in range(40))
-    return token
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 
@@ -27,10 +17,10 @@ def create_user(request):
         if serializer.is_valid():
             try:
                 user = serializer.save()
-                token = generate_unique_token()
-                UserToken.objects.create(user=user, token=token)
-
-                return Response({'message': 'User created successfully', 'token': token}, status=201)
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                refresh_token = str(refresh)
+                return Response({'message': 'User created successfully', 'access_token': access_token, 'refresh_token': refresh_token})
             except IntegrityError:
                 return Response({'message': 'Username already exists'}, status=400)
         return Response(serializer.errors, status=400)
@@ -49,8 +39,10 @@ def authenticate_user(request):
             user = None
         
         if user is not None:
-            token, _ = UserToken.objects.get_or_create(user=user)
-            return Response({'message': 'Authentication successful', 'token': token.token})
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            return Response({'message': 'Authentication successful', 'access_token': access_token})
         else:
             return Response({'message': 'Wrong login or password'}, status=401)
     else:

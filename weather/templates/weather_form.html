@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Форма для ввода города и страны</title>
+</head>
+<body>
+    <h1>Введите город и страну</h1>
+
+    <form action="/weather/current_weather/" method="get">
+        <label for="city">Город:</label>
+        <input type="text" id="city" name="city">
+
+        <label for="country">Страна:</label>
+        <input type="text" id="country" name="country">
+
+        <input type="submit" value="Получить погоду">
+    </form>
+</body>
+</html>
