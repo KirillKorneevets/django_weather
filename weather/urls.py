@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+app_name = 'weather'
 
 urlpatterns = [
     path('current_weather/', views.display_weather, name='current_weather'),
@@ -8,5 +9,8 @@ urlpatterns = [
     path("", views.home_page, name='home-page'),
     path("weather_form/", views.weather_form, name='weather_form'),
     path("weather_form_5_days/", views.weather_form_5_days, name='weather_form_5_days'),
+
+
+
 ]
 
