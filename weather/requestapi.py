@@ -1,6 +1,4 @@
 import os
-import xmltodict
-import json
 import requests
 from dotenv import load_dotenv
 from datetime import datetime 
