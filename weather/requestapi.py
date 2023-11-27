@@ -1,6 +1,4 @@
 import os
-import xmltodict
-import json
 import requests
 from dotenv import load_dotenv
 from datetime import datetime 
@@ -11,42 +9,45 @@ load_dotenv()
 
 
 def get_weather(city, country):
-
     api_key = os.environ.get('WEATHER_SECRET_APIKEY')
-    url = f"http://api.openweathermap.org/data/2.5/weather?q={city},{country}&appid={api_key}&mode=xml"
+    url = f"http://api.openweathermap.org/data/2.5/weather?q={city},{country}&appid={api_key}"
 
     response = requests.get(url)
 
+    if response.status_code != 200:
+        return {'error': 'Failed to fetch weather data.'}
 
-    data_json = json.dumps(xmltodict.parse(response.content))
-    current_data = json.loads(data_json)
-    weather_data = current_data['current']
+    try:
+        data = response.json()
 
+        location_name = f"{data.get('name', '')}, {data.get('sys', {}).get('country', '')}"
 
-    location_name = f"{weather_data['city']['@name']}, {weather_data['city']['country']}"
-    
-    tempk = float(weather_data['temperature']['@value'])
-    tempc = tempk - 273.15
+        tempk = float(data.get('main', {}).get('temp', 0))
+        tempc = tempk - 273.15
 
-    
-    humidity = int(weather_data['humidity']['@value'])
-    pressure = int(weather_data['pressure']['@value'])
-    wind_speed = float(weather_data['wind']['speed']['@value'])
-    wind_direction = weather_data['wind']['direction']['@name']
-    clouds = weather_data['clouds']['@name']
-    visibility = int(weather_data['visibility']['@value'])
+        humidity = int(data.get('main', {}).get('humidity', 0))
+        pressure = int(data.get('main', {}).get('pressure', 0))
+        wind_speed = float(data.get('wind', {}).get('speed', 0))
+        
+        wind_direction = data.get('wind', {}).get('deg', '')
 
+        clouds = data.get('clouds', {}).get('all', '')
+        visibility = int(data.get('visibility', 0))
 
-    weather_info = {
-        'location': location_name,
-        'temperature': f"Температура {tempc:.2f}°C",
-        'humidity': f'Влажность: {humidity}%',
-        'pressure': f'Давление: {pressure} hPa',
-        'wind': f'Ветер: {wind_speed} м/с, {wind_direction}',
-        'clouds': f'Облачность: {clouds}',
-        'visibility': f'Видимость: {visibility} м',
-    }                                        
-    return weather_info
+        weather_info = {
+            'location': location_name,
+            'temperature': f"Температура {tempc:.2f}°C",
+            'humidity': f'Влажность: {humidity}%',
+            'pressure': f'Давление: {pressure} hPa',
+            'wind': f'Ветер: {wind_speed} м/с, направление {wind_direction}°',
+            'clouds': f'Облачность: {clouds}%',
+            'visibility': f'Видимость: {visibility} м',
+        }
+        return weather_info
+
+    except Exception as e:
+        return {'error': f'An error occurred: {str(e)}'}
+
 
 
 
