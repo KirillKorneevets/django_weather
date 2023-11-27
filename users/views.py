@@ -1,18 +1,22 @@
-import json
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.db import IntegrityError
 from .models import User
 from .serializers import UserSerializer
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.views import APIView
+from django.shortcuts import render, redirect
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.decorators import api_view
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 
-
-@api_view(['POST'])
-def create_user(request):
-    if request.method == 'POST':
+class UserRegistrationView(APIView):
+    def get(self, request):
+        return render(request, 'create_user.html')
+    
+    def post(self, request):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             try:
@@ -20,30 +24,40 @@ def create_user(request):
                 refresh = RefreshToken.for_user(user)
                 access_token = str(refresh.access_token)
                 refresh_token = str(refresh)
-                return Response({'message': 'User created successfully', 'access_token': access_token, 'refresh_token': refresh_token})
+
+                response = redirect('weather:home-page')
+                response.set_cookie('access_token', access_token)
+                response.set_cookie('refresh_token', refresh_token)
+                return response
+            
             except IntegrityError:
                 return Response({'message': 'Username already exists'}, status=400)
         return Response(serializer.errors, status=400)
     
 
-@api_view(['POST'])
-def authenticate_user(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        username = data.get('username', '')
-        password = data.get('password', '')
-        
-        try:
+class UserLoginView(APIView):
+    def get(self, request):
+        return render(request, 'login_user.html')
+    
+    def post(self, request):
+            username = request.data.get('username')
+            password = request.data.get('password')
             user = User.objects.get(username=username, password=password)
-        except User.DoesNotExist:
-            user = None
-        
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            access_token = str(refresh.access_token)
 
-            return Response({'message': 'Authentication successful', 'access_token': access_token})
-        else:
-            return Response({'message': 'Wrong login or password'}, status=401)
-    else:
-        return Response({'message': 'Invalid request method'}, status=400)
+            if user is not None:
+                refresh = RefreshToken.for_user(user)
+                access_token = str(refresh.access_token)
+                refresh_token = str(refresh)
+
+                response = redirect('weather:home-page')
+                response.set_cookie('access_token', access_token)
+                response.set_cookie('refresh_token', refresh_token)
+                return response
+            else:
+                raise AuthenticationFailed({'message': 'Wrong login or password'})
+
+
+@api_view(['GET'])
+def main_page(request):
+    return render(request, 'main.html')
+    

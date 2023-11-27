@@ -42,7 +42,7 @@
             </div>
         {% endfor %}
     </div>
-    <form method="post" action="{% url 'chat_view' chat_id %}" id="chat-form">
+    <form method="post" action="{% url 'chat:chat_view' chat_id %}" id="chat-form">
         {% csrf_token %}
         <input type="text" name="message" placeholder="Введите сообщение">
         <input type="hidden" name="chat_id" value="{{ chat_id }}">

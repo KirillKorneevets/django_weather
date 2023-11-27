@@ -7,14 +7,14 @@
 <body>
     <h1>Главная страница</h1>
     <div class="button-container">
-        <a href="{% url 'weather_form' %}" class="btn btn-primary">Текущая погода</a>
+        <a href="{% url 'weather:weather_form' %}" class="btn btn-primary">Текущая погода</a>
     </div>
     <div class="button-container">
-        <a href="{% url 'weather_form_5_days' %}" class="btn btn-primary">Погода на 5 дней вперед</a>
+        <a href="{% url 'weather:weather_form_5_days' %}" class="btn btn-primary">Погода на 5 дней</a>
     </div>
     <div class="button-container">
-        <a href="{% url 'start_chat' %}" class="btn btn-primary">Поддержка</a>
+        <a href="{% url 'chat:start_chat' %}" class="btn btn-primary">Поддержка</a>
     </div>
 </body>
 </html>
-
+    
